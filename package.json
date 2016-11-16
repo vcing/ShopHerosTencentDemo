@@ -1,0 +1,41 @@
+{
+  "name": "shopherostencentdemo",
+  "version": "1.0.0",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "pm2 startOrGracefulReload ./pm2.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vcing/ShopHerosTencentDemo.git"
+  },
+  "author": "TY",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vcing/ShopHerosTencentDemo/issues"
+  },
+  "homepage": "https://github.com/vcing/ShopHerosTencentDemo#readme",
+  "description": "",
+  "dependencies": {
+    "babel-core": "^6.18.2",
+    "babel-polyfill": "^6.16.0",
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-stage-0": "^6.16.0",
+    "crypto": "0.0.3",
+    "express": "^4.14.0",
+    "lodash": "^4.17.1",
+    "moment": "^2.16.0",
+    "request": "^2.78.0",
+    "request-promise": "^4.1.1"
+  },
+  "babel": {
+    "presets": [
+      "es2015",
+      "stage-0"
+    ]
+  }
+}

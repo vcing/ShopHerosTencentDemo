@@ -1,0 +1,22 @@
+{
+	"apps":[{
+			"name"        : "nu77",
+			"script"      : "www",
+			"watch"       : ["/"],
+			"ignore_watch": ["node_modules","logs",".git","cache"],
+			"instances"   : 4,
+			"cwd"         : "/v/n.u77.com",
+			"error_file"  : "/v/n.u77.com/logs/pm2-err.log",
+			"out_file"    : "/v/n.u77.com/logs/pm2-out.log",
+			"pid_file"    : "/v/n.u77.com/logs/pm2-pid",
+			"interpreter_args":"--harmony",
+			"env"       : {
+				"DEBUG": "u77*",
+				"NODE_ENV": "production"
+			},
+			"env_production" : {
+				"DEBUG": ""
+			},
+			"exec_mode"  : "cluster"
+	}]
+}
