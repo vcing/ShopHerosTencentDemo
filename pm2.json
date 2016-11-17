@@ -1,7 +1,7 @@
 {
 	"apps":[{
 			"name"        : "ShopHerosTencentDemo",
-			"script"      : "node index.js",
+			"script"      : "index.js",
 			"watch"       : true,
 			"ignore_watch": ["node_modules","logs",".git","cache"],
 			"interpreter_args":"--harmony",
