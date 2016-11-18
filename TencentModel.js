@@ -19,7 +19,14 @@ const testAPIPath = 'http://119.147.19.43',
 	};
 
 function encodeUrl(str) {
-	return encodeURIComponent(str).replace(/\*/g,'%2A').replace(/-/g,'%2D');
+	// ! ~ * ' ( ) 
+	return encodeURIComponent(str)
+	.replace(/!/g,'%21')
+	.replace(/~/g,'%7E')
+	.replace(/\*/g,'%2A')
+	.replace(/'/g,'%27')
+	.replace(/\(/g,'%28')
+	.replace(/\)/g,'%29');
 }
 
 export class TencentModel {
@@ -84,7 +91,6 @@ export class TencentModel {
 		let firstPart = encodeUrl(interfaces[interfaceName]);
 		let secondPart = encodeUrl(this.sortAndFormatParams(params));
 		let final = requestMethod + '&' + firstPart + '&' + secondPart;
-		
 		let secret = config.appkey + '&';
 
 		let sig = crypto.createHmac('sha1', secret).update(final).digest().toString('base64');
@@ -109,6 +115,7 @@ export class TencentModel {
 				method,
 			};
 			body = await request(options);	
+			body = JSON.parse(body);
 		}catch(e) {
 			return {
 				code:102,
@@ -130,6 +137,7 @@ export class TencentModel {
 				method,
 			};
 			body = await request(options);	
+			body = JSON.parse(body);
 		}catch(e) {
 			return {
 				code:102,
@@ -151,6 +159,7 @@ export class TencentModel {
 				method,
 			};
 			body = await request(options);	
+			body = JSON.parse(body);
 		}catch(e) {
 			return {
 				code:102,
@@ -176,6 +185,7 @@ export class TencentModel {
 				method,
 			};
 			body = await request(options);	
+			body = JSON.parse(body);
 		}catch(e) {
 			return {
 				code:102,
@@ -216,6 +226,40 @@ export class TencentModel {
 			let options = {
 				uri:this.secretApiPath + interfaces[manner] + '?' + this.objectToUrl(data),
 				method,
+			};
+			body = await request(options);
+			body = JSON.parse(body);
+		}catch(e) {
+			return {
+				code:102,
+				err:'http request error',
+				detail:e
+			}
+		}
+		return body;
+	}
+
+	async confirmDelivery(order,result = 0,errmsg) {
+		const method = 'GET',
+		manner = 'confirmDelivery';
+
+		let additionParams = {
+			ts:moment().unix(),
+			payitem:order.payitem,
+			token_id:order.token,
+			billno:order.billno,
+			zoneid:order.zoneid,
+			provide_errno:result,
+			provide_errno:errmsg,
+			amt:order.amt,
+			payamt_coins:order.payamt_coins,
+		}
+		let data = this.getFullParams(manner,method,additionParams);
+		let body = '';
+		try {
+			let options = {
+				uri:this.secretApiPath + interfaces[manner] + '?' + this.objectToUrl(data),
+				method
 			};
 			body = await request(options);
 			body = JSON.parse(body);

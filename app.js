@@ -18,8 +18,10 @@ global.orders = {};
 global.users = {};
 
 app.get('/test',(req,res,next) => {
+	confirmDelivery();
 	req.session.test = isNaN(req.session.test) ? 0 : req.session.test+1;
-	res.json({test:req.session.test,orders:global.orders,users:global.users});
+	let allData = {test:req.session.test,orders:global.orders,users:global.users};
+	res.json(allData);
 });
 
 app.get('/',(req,res,next) => {
@@ -36,6 +38,7 @@ app.get('/',(req,res,next) => {
 app.get('/getInfo',(req,res,next) => {
 	if(!req.session.params){
 		res.json({err:'no data'});
+		return;
 	}
 	let tm = new TencentModel(req.session.params,{dev:true});
 	if(tm.err){
@@ -50,6 +53,7 @@ app.get('/getInfo',(req,res,next) => {
 app.get('/isLogin',(req,res,next) => {
 	if(!req.session.params){
 		res.json({err:'no data'});
+		return;
 	}
 	let tm = new TencentModel(req.session.params,{dev:true});
 	if(tm.err){
@@ -64,6 +68,7 @@ app.get('/isLogin',(req,res,next) => {
 app.get('/getAppFriends',(req,res,next) => {
 	if(!req.session.params){
 		res.json({err:'no data'});
+		return;
 	}
 	let tm = new TencentModel(req.session.params,{dev:true});
 	if(tm.err){
@@ -79,6 +84,7 @@ app.get('/getAppFriends',(req,res,next) => {
 app.get('/wordFilter',(req,res,next) => {
 	if(!req.session.params){
 		res.json({err:'no data'});
+		return;
 	}
 	
 	let tm = new TencentModel(req.session.params,{dev:true});
@@ -94,6 +100,7 @@ app.get('/wordFilter',(req,res,next) => {
 app.get('/buyGoods',(req,res) => {
 	if(!req.session.params) {
 		res.json({err:'no data'});
+		return;
 	}
 
 	let tm = new TencentModel(req.session.params,{dev:true});
@@ -113,15 +120,35 @@ app.get('/buyGoods',(req,res) => {
 							status:0
 						};
 						res.json(result);
+					}else {
+						res.json(result);
 					}
-					
 				});
 });
 
+app.get('/confirmDelivery',(req,res) => {
+	let queue = [];
+	for(let token in global.orders) {
+		let order = global.orders[token];
+		if(order.status == 1) {
+			let user = global.users[order.openid];
+			let tm = new TencentModel(user,{dev:true});
+			let _p = tm.confirmDelivery(order,0).then(result => {
+				if(result.ret == 0) {
+					order.status = 2;
+				}
+				return true;
+			});
+			queue.push(_p);
+		}
+	}
+	Promise.all(queue).then(results => {
+		res.json(global.orders);
+	});
+});
+
 app.get('/pay',(req,res) => {
-	console.log('ppppppppppppay');
 	validPaymentCallback(req.query,'GET').then(result => {
-		console.log(result);
 		if(result) {
 			global.orders[req.query['token']].status = 1;
 			Object.assign(global.orders[req.query['token']],req.query);

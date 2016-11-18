@@ -17,6 +17,17 @@
 		margin-left: 50px;
 		cursor: pointer;
 	}
+
+	#result {
+		width: 80%;
+		background: #333;
+		color: #fff;
+		display: block;
+		word-break: break-all;
+		padding: 20px;
+		margin: 20px auto;
+		min-height: 500px;
+	}
 </style>
 <body>
 
@@ -28,32 +39,54 @@
 	<input type="text" name="id" placeholder="item id">
 	<input type="text" name="unitPrice" placeholder="Item unitPrice">
 	<input type="text" name="quantity" placeholder="Item quantity">
-	<a onclick="setTestData()" style="background: blue;color: #fff">test data</a><br>
+	<a onclick="setTestData()" style="background: blue">test data</a>
+	<a onclick="getAllData()" style="background: blue">all data</a><br>
 	<input type="text" name="name" placeholder="Item name">
 	<input type="text" name="description" placeholder="Item description">
 	<input type="text" name="imageUrl" placeholder="Item imageUrl">
-	<a onclick="buyGoods()">Buy!</a>
+	<a onclick="buyGoods()" style="background: chocolate;">Buy!</a>
+	<a onclick="confirmDelivery()" style="width: 150px;">confirmDelivery</a>
+	<div id="result"></div>
 
 
 <script type="text/javascript" src="/jquery.min.js"></script>
 <script type="text/javascript" charset="utf-8" src="http://fusion.qq.com/fusion_loader?appid=<%=appid%>&platform=<%=pf%>"></script>
 <script type="text/javascript">
 
+function html_encode(str)   
+{   
+  var s = "";   
+  if (str.length == 0) return "";   
+  s = str.replace(/&/g, "&gt;");   
+  s = s.replace(/</g, "&lt;");   
+  s = s.replace(/>/g, "&gt;");   
+  s = s.replace(/ /g, "&nbsp;");   
+  s = s.replace(/\\'/g, "&#39;");   
+  s = s.replace(/\\"/g, "&quot;");   
+  s = s.replace(/\n/g, "<br>");
+  s = s.replace(/\\/g, "");
+  return s;   
+} 
+
+function output(result) {
+	$('#result').html(html_encode(JSON.stringify(result, null, 2)));
+}
+
 function getInfo() {
 	$.get('/getInfo',function(result) {
-		console.log(result);
+		output(result);
 	});
 }
 
 function isLogin() {
 	$.get('/isLogin',function(result) {
-		console.log(result);
+		output(result);
 	});
 }
 
 function getAppFriends() {
 	$.get('/getAppFriends',function(result) {
-		console.log(result);
+		output(result);
 	});
 }
 
@@ -62,7 +95,7 @@ function wordFilter() {
 		content:$('#testwordfilter').val(),
 		msgid:parseInt(Math.random()*100000)+'just4test'
 	},function(result) {
-		console.log(result);
+		output(result);
 	});
 }
 
@@ -75,11 +108,16 @@ function buyGoods() {
 		description:$('input[name="description"]').val(),
 		imageUrl:$('input[name="imageUrl"]').val(),
 	},function(result) {
+		output(result);
 		if(result.ret == 0) {
 			openBuyDialog(result);
-		}else {
-			alert(result.err);
 		}
+	});
+}
+
+function confirmDelivery() {
+	$.get('/confirmDelivery',function(result) {
+		output(result);
 	});
 }
 
@@ -127,6 +165,13 @@ function setTestData() {
 	$('input[name="name"]').val('道具');
 	$('input[name="description"]').val('测试描述信息！！！');
 	$('input[name="imageUrl"]').val('http://qzonestyle.gtimg.cn/qzonestyle/act/qzone_app_img/app613_613_75.png');
+	$('#testwordfilter').val('阿斯利康庸6');
+}
+
+function getAllData() {
+	$.get('/test',function(result) {
+		output(result);
+	})
 }
 
 </script>
