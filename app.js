@@ -17,13 +17,17 @@ app.use(session({ secret: 'Pretending as a database', cookie: { maxAge: 60000 }}
 global.orders = {};
 global.users = {};
 
+// this test api will return all data
 app.get('/test',(req,res,next) => {
-	confirmDelivery();
 	req.session.test = isNaN(req.session.test) ? 0 : req.session.test+1;
 	let allData = {test:req.session.test,orders:global.orders,users:global.users};
 	res.json(allData);
 });
 
+// for some reason
+// tencent will bind this server to the game in tencent platform
+// when users enter this game,tencent will let or redirect users to this path
+// tencent don't allow game server to change this path
 app.get('/',(req,res,next) => {
 	let tm = new TencentModel(req.query,{dev:true});
 	if(tm.err) {
@@ -167,5 +171,7 @@ app.use('/', express.static(__dirname + '/public'));
 
 let server = http.createServer(app);
 server.listen(80);
+
+// tencent payment callback will request game server in 9001 port
 server.listen(9001);
 console.log('----------------------server start---------------------');
